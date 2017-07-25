@@ -69,7 +69,7 @@ public class EncryptHelper {
      * 获取密钥值
      *
      * @param context the context
-     * @return 密钥值
+     * @return 密钥值 string
      */
     public String obtainSecretKeyValue(Context context) {
         return SecretKeyHelper.getInstance().obtainSecretKeyValue(context);
@@ -151,7 +151,7 @@ public class EncryptHelper {
      *
      * @param sourceFile  源文件(加密后的)
      * @param decryptFile 解密后的文件
-     * @return 解密文件\
+     * @return 解密文件 \
      */
     public File decryptFile(File sourceFile, File decryptFile) {
         return FacebookCryptoConcealHelper.decryptFile(sourceFile, decryptFile);
