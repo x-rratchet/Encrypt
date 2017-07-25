@@ -1,0 +1,115 @@
+apply plugin: 'com.android.library'
+
+android {
+    compileSdkVersion 25
+    buildToolsVersion "25.0.3"
+
+    defaultConfig {
+        minSdkVersion 9
+        targetSdkVersion 25
+        versionCode 1
+        versionName "1.0"
+
+        testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+
+        externalNativeBuild {
+            cmake {
+                cppFlags ""
+            }
+        }
+
+    }
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+        }
+    }
+    externalNativeBuild {
+        cmake {
+            path "CMakeLists.txt"
+        }
+    }
+}
+
+dependencies {
+    compile fileTree(dir: 'libs', include: ['*.jar'])
+    androidTestCompile('com.android.support.test.espresso:espresso-core:2.2.2', {
+        exclude group: 'com.android.support', module: 'support-annotations'
+    })
+    compile 'com.android.support:appcompat-v7:25.3.1'
+    testCompile 'junit:junit:4.12'
+    compile 'com.facebook.conceal:conceal:1.1.3@aar'
+}
+
+//-----------------javadoc编码------------------------
+allprojects {
+    tasks.withType(Javadoc) {
+        options{
+            encoding "UTF-8"
+            charSet 'UTF-8'
+            links "http://docs.oracle.com/javase/7/docs/api"
+        }
+    }
+}
+
+
+/**
+ * 导入配置：config/buildJar.properties
+ * @return
+ */
+Properties loadProperties() {
+
+    def propertiesFile = file("config/buildJar.properties")
+    Properties properties = new Properties();
+
+    propertiesFile.withInputStream { stream ->
+        properties.load(stream);
+    }
+
+    return properties;
+}
+
+//打jar包
+task buildJarRelease(type: Jar) {
+
+//    outputFileDir= project.buildDir.path+"/jar"
+
+    Properties properties = loadProperties();
+    String BASENAME         = properties.BASENAME;
+    String APPENDIX         = properties.APPENDIX;
+    String VERSION          = properties.VERSION;
+    String CLASSIFIER       = properties.CLASSIFIER;
+    String EXTENSION        = properties.EXTENSION;
+    String LIBRARY_PACKAGE  = properties.LIBRARY_PACKAGE;
+    String INCLUDE_CLASS    = properties.INCLUDE_CLASS;
+
+    baseName = BASENAME
+    appendix = APPENDIX
+    version = VERSION
+    classifier = CLASSIFIER
+
+    //后缀名
+    extension = EXTENSION
+
+    //最终的 Jar 包名，如果没设置，默认为 [baseName]-[appendix]-[version]-[classifier].[extension]
+
+    //需打包的资源所在的路径集
+    def srcClassDir = [project.buildDir.absolutePath + "/intermediates/classes/release"];
+    //初始化资源路径集
+    from srcClassDir
+
+    //去除路径集下部分的资源
+    exclude LIBRARY_PACKAGE + "/BuildConfig.class"
+    exclude LIBRARY_PACKAGE + "/BuildConfig\$*.class"
+    exclude "**/R.class"
+    exclude "**/R\$*.class"
+
+    //只导入资源路径集下的部分资源
+    include INCLUDE_CLASS
+
+    //注: exclude include 支持可变长参数
+}
+
+buildJarRelease.dependsOn(build)
+//在终端执行生成JAR包：gradlew buildJarRelease
