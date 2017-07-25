@@ -23,10 +23,22 @@ allprojects {
 
 ### Step 2. 添加 `Encrypt` 的引用
 
+- 添加aar包：encrypt-secret-key-0.0.1.aar，并声明
+
+```
+repositories {
+    flatDir {
+        dirs 'aars'   // aar目录
+    }
+}
+```
+
+- 添加依赖引用
+
 ```
 dependencies {
-	compile 'com.facebook.conceal:conceal:1.1.3@aar'
-	compile 'com.github.RRatChet:Encrypt:0.0.1'
+    compile 'com.facebook.conceal:conceal:1.1.3@aar'
+    compile(name: 'encrypt-secret-key-0.0.1', ext: 'aar')
 }
 ```
 
